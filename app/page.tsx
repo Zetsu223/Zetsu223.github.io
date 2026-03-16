@@ -41,22 +41,16 @@ const ImpactSprite = ({ id, x, y, impactType, onComplete }: { id: number, x: num
 // --- MAIN COMPONENT ---
 export default function InteractiveLanding() {
   const [appState, setAppState] = useState<'title' | 'transitioning' | 'loading' | 'dashboard' | 'project_transition' | 'project' | 'skills'>('title');
-
-  // NEW: CRT Boot Sequence State
   const [isBooting, setIsBooting] = useState(true);
-
   const [typedText, setTypedText] = useState("");
   const [typingPhase, setTypingPhase] = useState("typing_typo"); 
   const [isDamaged, setIsDamaged] = useState(false);
   const [hearts, setHearts] = useState<{id: number, left: number}[]>([]);
   const [clicks, setClicks] = useState<{id: number, x: number, y: number, type: number}[]>([]);
-  
   const [comboCount, setComboCount] = useState(0);
   const [comboTimer, setComboTimer] = useState(0); 
   const drainRate = 2.5; 
-
   const [stars, setStars] = useState<{id: number, top: string, left: string, size: number, delay: string}[]>([]);
-
   const [activeStage, setActiveStage] = useState(0);
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
 
@@ -66,7 +60,7 @@ export default function InteractiveLanding() {
       id: "1", title: "TRAVEL ORDER SYS", type: "OJT MISSION", status: "COMPLETED",
       desc: "A COMPREHENSIVE TRAVEL ORDER MANAGEMENT SYSTEM ENGINEERED FROM THE GROUND UP DURING MY OJT PROGRAM. DESIGNED TO STREAMLINE REQUESTS, APPROVALS, AND TRACKING FOR PERSONNEL DEPLOYMENT.", 
       tech: ["WEB DEV", "SYSTEMS"],
-      x: 15, y: 55, img: '/assets/geo1.gif', size: 'w-24 md:w-36', rotate: '0deg',
+      x: 15, y: 55, img: '/assets/geo1.gif', size: 'w-16 sm:w-20 md:w-36', rotate: '0deg',
       screenshot: '/assets/travel_order.png', 
       objective: "Digitize and automate the entire travel order workflow for personnel deployment. The legacy system relied on manual paperwork, leading to severe delays and tracking inaccuracies.",
       achievements: ["Engineered Role-based Access Control (Admin, Staff, Manager)", "Automated dynamic PDF report generation", "Built a real-time status tracking dashboard"]
@@ -75,7 +69,7 @@ export default function InteractiveLanding() {
       id: "2", title: "PAPERBACK EXT.", type: "SCRIPT MISSION", status: "ACTIVE",
       desc: "A ROBUST CUSTOM EXTENSIONS REPOSITORY BUILT FOR PAPERBACK, A POPULAR APPLICATION FOR READING MANGA AND COMICS. FEATURES WEB SCRAPING AND API INTEGRATION TO PARSE IMAGE CHAPTERS RELIABLY.", 
       tech: ["JAVASCRIPT", "API"],
-      x: 40, y: 25, img: '/assets/geo2.gif', size: 'w-20 md:w-32', rotate: '0deg',
+      x: 40, y: 25, img: '/assets/geo2.gif', size: 'w-12 sm:w-16 md:w-32', rotate: '0deg',
       screenshot: '', 
       objective: "Develop and maintain custom JavaScript scrapers that interface directly with various web APIs and raw HTML DOM to deliver reliable, high-quality image chapter payloads to the Paperback mobile app.",
       achievements: ["Parsed complex, obfuscated website DOMs reliably", "Optimized image loading times and bypassed rate-limiting", "Handled asynchronous API requests seamlessly"]
@@ -84,7 +78,7 @@ export default function InteractiveLanding() {
       id: "3", title: "PIXEL ASSET PACK", type: "DESIGN MISSION", status: "COMPLETED",
       desc: "A COMPREHENSIVE COLLECTION OF ORIGINAL 16-BIT PIXEL ART CHARACTERS, TILESETS, AND ANIMATED SPRITES DESIGNED FOR USE IN MODERN RETRO-STYLE INDIE GAMES.", 
       tech: ["ASEPRITE", "ANIMATION"],
-      x: 65, y: 50, img: '/assets/geo3.gif', size: 'w-24 md:w-36', rotate: '0deg',
+      x: 65, y: 50, img: '/assets/geo3.gif', size: 'w-16 sm:w-20 md:w-36', rotate: '0deg',
       screenshot: '', 
       objective: "Create a fully cohesive, modular pixel art package suitable for top-down RPGs or platformers, maintaining strict color palettes and fluid frame-by-frame animation principles.",
       achievements: ["Designed 8-directional walking and attacking animations", "Created 50+ seamless, interlocking terrain tiles", "Maintained a strict 32-color retro palette"]
@@ -93,14 +87,13 @@ export default function InteractiveLanding() {
       id: "4", title: "SMART CONTRACT", type: "CRYPTO MISSION", status: "IN DEVELOPMENT",
       desc: "AN EXPERIMENTAL WEB3 PROJECT DEPLOYING A SECURE BLOCKCHAIN SMART CONTRACT FOR DECENTRALIZED ASSET TRADING AND OWNERSHIP VERIFICATION.", 
       tech: ["SOLIDITY", "WEB3.JS"],
-      x: 85, y: 20, img: '/assets/geo4.gif', size: 'w-28 md:w-40', rotate: '0deg',
+      x: 85, y: 20, img: '/assets/geo4.gif', size: 'w-20 sm:w-24 md:w-40', rotate: '0deg',
       screenshot: '', 
       objective: "Research and implement a secure, gas-efficient ERC-721/ERC-1155 smart contract on a testnet to understand the fundamentals of decentralized applications and blockchain architecture.",
       achievements: ["Wrote and deployed gas-optimized Solidity contracts", "Implemented secure minting and burning functions", "Connected a React front-end using Web3.js/Ethers"]
     },
   ];
 
-  // SKILLS DATA FOR RPG STATUS MENU
   const skillData = [
     { category: "LANGUAGES", items: [{name: "JAVASCRIPT", level: 9}, {name: "PHP", level: 8}, {name: "LUA", level: 8}, {name: "SOLIDITY", level: 6}, {name: "C++", level: 7}, {name: "HTML/CSS", level: 9}] },
     { category: "FRAMEWORKS", items: [{name: "REACT / NEXT.JS", level: 9}, {name: "LARAVEL", level: 8}, {name: "TAILWIND CSS", level: 9}] },
@@ -109,12 +102,8 @@ export default function InteractiveLanding() {
 
   const mapPathPoints = stages.map(s => `${s.x},${s.y}`).join(' ');
 
-  // Handle CRT Boot Timer
   useEffect(() => {
-    // Remove the boot screen after 2.2 seconds
-    const bootTimer = setTimeout(() => {
-      setIsBooting(false);
-    }, 2200);
+    const bootTimer = setTimeout(() => setIsBooting(false), 2200);
     return () => clearTimeout(bootTimer);
   }, []);
 
@@ -129,30 +118,20 @@ export default function InteractiveLanding() {
     setStars(generatedStars);
   }, []);
 
-  // Universal Keyboard Controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.key === 'a' || e.key === 'A' || e.key === 'Enter') && appState === 'dashboard') {
-        handleInitiateProject(e as any);
-      }
-      if ((e.key === 's' || e.key === 'S') && appState === 'dashboard') {
-        setAppState('skills');
-      }
+      if ((e.key === 'a' || e.key === 'A' || e.key === 'Enter') && appState === 'dashboard') handleInitiateProject(e as any);
+      if ((e.key === 's' || e.key === 'S') && appState === 'dashboard') setAppState('skills');
       if ((e.key === 'b' || e.key === 'B' || e.key === 'Escape')) {
-        if (enlargedImage) {
-          setEnlargedImage(null); 
-        } else if (appState === 'project' || appState === 'skills') {
-          setAppState('dashboard'); 
-        }
+        if (enlargedImage) setEnlargedImage(null); 
+        else if (appState === 'project' || appState === 'skills') setAppState('dashboard'); 
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [appState, enlargedImage]); 
 
-  // Typewriter
   useEffect(() => {
-    // Paused the typewriter if the CRT is still booting!
     if (appState !== 'title' || isBooting) return;
     const typoStr = "AN ASPIRING WEB DEV";
     const realStr = "AN ASPIRING GAME DEVELOPER";
@@ -258,7 +237,6 @@ export default function InteractiveLanding() {
 
         @keyframes crt-flicker { 0% { opacity: 0.95; } 50% { opacity: 1; } 100% { opacity: 0.95; } }
 
-        /* NEW: CRT BOOT ANIMATIONS */
         @keyframes crt-turn-on-bg {
           0%, 60% { background-color: #000; opacity: 1; }
           80% { background-color: #fff; opacity: 1; }
@@ -291,9 +269,6 @@ export default function InteractiveLanding() {
         .animate-crt-line { animation: crt-turn-on-line 2.2s cubic-bezier(0.86, 0, 0.07, 1) forwards; }
       `}</style>
 
-      {/* ========================================= */}
-      {/* INITIAL BOOT SEQUENCE (CRT TURN ON)       */}
-      {/* ========================================= */}
       {isBooting && (
         <div className="fixed inset-0 z-[999] bg-black flex items-center justify-center animate-crt-bg pointer-events-none">
           <div className="bg-white animate-crt-line absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
@@ -329,9 +304,6 @@ export default function InteractiveLanding() {
 
       <div className={`absolute inset-0 z-10 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(2,6,23,0.8)_100%)] pointer-events-none transition-opacity duration-1000 ${(appState !== 'title' && appState !== 'transitioning' && appState !== 'loading') ? 'opacity-100 bg-slate-950/80' : 'opacity-100'}`}></div>
 
-      {/* ========================================= */}
-      {/* STATE 1 & 2: TITLE SCREEN & TRANSITIONOUT */}
-      {/* ========================================= */}
       {(appState === 'title' || appState === 'transitioning') && (
         <div className={`relative z-20 w-full flex flex-col items-center justify-center h-full transition-all duration-[1200ms] ease-in-out ${appState === 'transitioning' ? 'scale-125 opacity-0 blur-sm pointer-events-none' : 'scale-100 opacity-100 animate-title-in'}`}>
           <div className="absolute top-6 md:top-10 w-full px-6 md:px-16 flex justify-between z-30 pointer-events-none text-[8px] md:text-xs font-bold tracking-[0.2em] md:tracking-[0.4em]">
@@ -376,8 +348,8 @@ export default function InteractiveLanding() {
       )}
 
       {appState === 'loading' && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center animate-title-in">
-          <p className="text-2xl md:text-4xl text-yellow-400 tracking-[0.3em] font-bold animate-pulse drop-shadow-[0_0_15px_rgba(250,204,21,0.6)]">
+        <div className="absolute inset-0 z-50 flex items-center justify-center animate-title-in px-4">
+          <p className="text-xl sm:text-2xl md:text-4xl text-yellow-400 tracking-[0.2em] md:tracking-[0.3em] font-bold animate-pulse drop-shadow-[0_0_15px_rgba(250,204,21,0.6)] text-center w-full break-words">
             NOW LOADING...
           </p>
         </div>
@@ -386,27 +358,29 @@ export default function InteractiveLanding() {
       {appState === 'dashboard' && (
         <div className="relative z-50 w-full h-full max-w-6xl mx-auto flex flex-col animate-title-in pointer-events-auto select-auto px-2">
           
-          <div className="w-full flex justify-between items-center p-6 md:p-10 pointer-events-none z-30">
-            <h2 className="text-xl md:text-4xl text-white font-bold tracking-widest drop-shadow-[3px_3px_0_#0f172a] text-center w-full">
-              WORLD 1
-            </h2>
-            <div className="absolute top-6 right-6 flex gap-3 md:gap-4 pointer-events-auto">
+          <div className="w-full relative pointer-events-none z-30">
+            {/* The absolute positioned buttons on top right */}
+            <div className="absolute top-4 right-4 md:top-8 md:right-8 flex gap-2 md:gap-4 pointer-events-auto z-40">
               <button 
                 onClick={(e) => { e.stopPropagation(); setAppState('skills'); }}
-                className="px-3 py-2 border-2 border-white bg-slate-900 text-yellow-400 hover:bg-white hover:text-slate-900 transition-colors text-[8px] md:text-xs tracking-widest flex items-center gap-2"
+                className="px-2 md:px-3 py-1.5 md:py-2 border-2 border-white bg-slate-900 text-yellow-400 hover:bg-white hover:text-slate-900 transition-colors text-[8px] md:text-xs tracking-widest flex items-center gap-2"
               >
                 <span className="hidden sm:block">[S]</span> SKILLS
               </button>
               <button 
                 onClick={handleLogout}
-                className="px-3 py-2 border-2 border-white bg-black text-white hover:bg-white hover:text-black transition-colors text-[8px] md:text-xs tracking-widest"
+                className="px-2 md:px-3 py-1.5 md:py-2 border-2 border-white bg-black text-white hover:bg-white hover:text-black transition-colors text-[8px] md:text-xs tracking-widest"
               >
                 [X] QUIT
               </button>
             </div>
+            {/* Title dynamically pushed down so it doesn't overlap the buttons on mobile */}
+            <h2 className="text-2xl md:text-4xl text-white font-bold tracking-widest drop-shadow-[3px_3px_0_#0f172a] text-center w-full pt-16 md:pt-10">
+              PROJECTS
+            </h2>
           </div>
 
-          <div className="relative flex-1 w-full mt-4 md:mt-0 mb-[30vh]">
+          <div className="relative flex-1 w-full mt-4 md:mt-0 mb-[35vh] md:mb-[30vh]">
             
             <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full z-0 pointer-events-none opacity-50">
               <polyline 
@@ -435,9 +409,9 @@ export default function InteractiveLanding() {
                     >
                       
                       {isActive && (
-                        <div className="absolute -top-12 md:-top-16 z-20 animate-player left-1/2">
-                          <img src="/assets/sprite_jump.gif" alt="Player Sprite" className="w-8 md:w-12 pixelated drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]" />
-                          <div className="text-[8px] md:text-[10px] text-yellow-400 bg-black border border-white px-1 mt-1 text-center font-bold">P1</div>
+                        <div className="absolute -top-10 md:-top-16 z-20 animate-player left-1/2">
+                          <img src="/assets/sprite_jump.gif" alt="Player Sprite" className="w-6 sm:w-8 md:w-12 pixelated drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]" />
+                          <div className="text-[6px] md:text-[10px] text-yellow-400 bg-black border border-white px-1 mt-1 text-center font-bold">P1</div>
                         </div>
                       )}
 
@@ -451,7 +425,7 @@ export default function InteractiveLanding() {
                         style={{ transform: `rotate(${stage.rotate})` }}
                       />
                       
-                      <div className={`mt-2 px-2 py-1 border-2 text-[8px] md:text-[10px] font-bold bg-black whitespace-nowrap transition-colors ${isActive ? 'border-fuchsia-500 text-fuchsia-400' : 'border-white text-white'}`}>
+                      <div className={`mt-1 md:mt-2 px-1 md:px-2 py-0.5 md:py-1 border-2 text-[6px] md:text-[10px] font-bold bg-black whitespace-nowrap transition-colors ${isActive ? 'border-fuchsia-500 text-fuchsia-400' : 'border-white text-white'}`}>
                         {stage.id}
                       </div>
 
@@ -462,34 +436,34 @@ export default function InteractiveLanding() {
             })}
           </div>
 
-          <div className="absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 w-[95%] max-w-4xl z-50 pointer-events-auto">
-            <div className="bg-black border-4 border-white p-4 md:p-6 shadow-[10px_10px_0_rgba(0,0,0,0.8)] relative">
+          <div className="absolute bottom-2 md:bottom-8 left-1/2 transform -translate-x-1/2 w-[98%] md:w-[95%] max-w-4xl z-50 pointer-events-auto">
+            <div className="bg-black border-2 md:border-4 border-white p-3 md:p-6 shadow-[5px_5px_0_rgba(0,0,0,0.8)] md:shadow-[10px_10px_0_rgba(0,0,0,0.8)] relative">
               
-              <div className="absolute -top-4 left-4 bg-fuchsia-600 border-2 border-white px-3 py-1 text-[10px] md:text-xs text-white">
+              <div className="absolute -top-3 md:-top-4 left-2 md:left-4 bg-fuchsia-600 border border-white md:border-2 px-2 md:px-3 py-0.5 md:py-1 text-[8px] md:text-xs text-white">
                 STAGE {stages[activeStage].id}
               </div>
 
-              <div className="absolute -top-4 right-4 bg-black border-2 border-white px-3 py-1 text-[8px] md:text-[10px] text-yellow-400 animate-pulse">
+              <div className="absolute -top-3 md:-top-4 right-2 md:right-4 bg-black border border-white md:border-2 px-2 md:px-3 py-0.5 md:py-1 text-[6px] md:text-[10px] text-yellow-400 animate-pulse">
                 {stages[activeStage].status}
               </div>
 
-              <div className="mt-2 flex flex-col md:flex-row gap-4 md:gap-8 items-start">
-                <div className="flex-1">
-                  <h3 className="text-cyan-400 text-lg md:text-2xl tracking-widest mb-3 drop-shadow-[2px_2px_0_#334155]">
+              <div className="mt-2 flex flex-col md:flex-row gap-2 md:gap-8 items-start">
+                <div className="flex-1 w-full">
+                  <h3 className="text-cyan-400 text-sm md:text-2xl tracking-widest mb-1 md:mb-3 drop-shadow-[1px_1px_0_#334155] md:drop-shadow-[2px_2px_0_#334155]">
                     {stages[activeStage].title}
                   </h3>
                   
-                  <p className="text-white text-[8px] md:text-[10px] leading-[2.5] md:leading-[3] tracking-widest h-[80px] md:h-[90px] overflow-y-auto custom-scrollbar">
+                  <p className="text-white text-[6px] md:text-[10px] leading-[2.5] md:leading-[3] tracking-widest h-[60px] md:h-[90px] overflow-y-auto custom-scrollbar pr-2">
                     {stages[activeStage].desc}
                   </p>
                 </div>
 
-                <div className="w-full md:w-1/3 flex flex-col gap-4 border-t-2 md:border-t-0 md:border-l-2 border-slate-700 pt-4 md:pt-0 md:pl-6">
-                  <div>
-                    <p className="text-slate-500 text-[8px] tracking-widest mb-2">REQUIRED SKILLS:</p>
-                    <div className="flex flex-wrap gap-2">
+                <div className="w-full md:w-1/3 flex flex-row md:flex-col gap-2 md:gap-4 border-t border-slate-700 md:border-t-0 md:border-l-2 pt-2 md:pt-0 md:pl-6">
+                  <div className="flex-1">
+                    <p className="text-slate-500 text-[6px] md:text-[8px] tracking-widest mb-1 md:mb-2">REQUIRED SKILLS:</p>
+                    <div className="flex flex-wrap gap-1 md:gap-2">
                       {stages[activeStage].tech.map(t => (
-                        <span key={t} className="bg-slate-800 text-cyan-200 border border-slate-600 px-2 py-1 text-[8px] tracking-widest">
+                        <span key={t} className="bg-slate-800 text-cyan-200 border border-slate-600 px-1.5 md:px-2 py-0.5 md:py-1 text-[6px] md:text-[8px] tracking-widest">
                           {t}
                         </span>
                       ))}
@@ -498,14 +472,14 @@ export default function InteractiveLanding() {
 
                   <div 
                     onClick={handleInitiateProject}
-                    className="mt-auto w-full border-2 border-dashed border-slate-500 bg-slate-900/50 p-2 cursor-pointer group flex flex-col items-center justify-center hover:bg-slate-800 transition-colors"
+                    className="w-auto md:w-full border border-dashed border-slate-500 bg-slate-900/50 p-1 md:p-2 cursor-pointer group flex flex-col items-center justify-center hover:bg-slate-800 transition-colors"
                   >
-                    <span className="text-[8px] text-slate-400 group-hover:text-white mb-2 transition-colors">ACCESS STAGE</span>
-                    <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-red-600 border-2 border-white flex items-center justify-center text-white font-bold text-xs shadow-[2px_2px_0_#475569] group-hover:bg-red-500">
+                    <span className="text-[6px] md:text-[8px] text-slate-400 group-hover:text-white mb-0.5 md:mb-2 transition-colors hidden md:block">ACCESS STAGE</span>
+                    <div className="flex items-center gap-1 md:gap-3">
+                      <div className="w-4 h-4 md:w-8 md:h-8 rounded-full bg-red-600 border border-white flex items-center justify-center text-white font-bold text-[8px] md:text-xs shadow-[1px_1px_0_#475569] group-hover:bg-red-500">
                         A
                       </div>
-                      <span className="text-white text-[10px] md:text-xs tracking-widest animate-pulse transition-colors">
+                      <span className="text-white text-[8px] md:text-[10px] tracking-widest animate-pulse transition-colors">
                         ACTION
                       </span>
                     </div>
@@ -534,26 +508,27 @@ export default function InteractiveLanding() {
       )}
 
       {appState === 'project' && (
-        <div className="relative z-50 w-full h-full flex flex-col items-center justify-center pointer-events-auto bg-slate-950/95 backdrop-blur-md px-4 py-8 animate-fade-up select-auto">
+        <div className="relative z-50 w-full h-full flex flex-col items-center justify-center pointer-events-auto bg-slate-950/95 backdrop-blur-md px-2 md:px-4 py-4 md:py-8 animate-fade-up select-auto overflow-hidden">
           
-          <div className="w-full max-w-5xl bg-black border-4 border-slate-500 shadow-[0_0_30px_rgba(0,0,0,0.8)] flex flex-col max-h-[90vh]">
+          {/* Main Container - Allows scrolling internally on mobile */}
+          <div className="w-full max-w-5xl bg-black border-2 md:border-4 border-slate-500 shadow-[0_0_30px_rgba(0,0,0,0.8)] flex flex-col h-full max-h-full md:max-h-[90vh]">
             
-            <div className="bg-slate-900 border-b-4 border-slate-500 p-4 md:p-6 flex justify-between items-center shrink-0">
+            <div className="bg-slate-900 border-b-2 md:border-b-4 border-slate-500 p-3 md:p-6 flex justify-between items-center shrink-0">
               <div>
-                <p className="text-fuchsia-500 text-[10px] md:text-xs tracking-widest mb-1">MISSION DEBRIEF</p>
-                <h2 className="text-xl md:text-3xl text-white drop-shadow-[2px_2px_0_#0f172a]">{stages[activeStage].title}</h2>
+                <p className="text-fuchsia-500 text-[8px] md:text-xs tracking-widest mb-1">MISSION DEBRIEF</p>
+                <h2 className="text-lg md:text-3xl text-white drop-shadow-[2px_2px_0_#0f172a]">{stages[activeStage].title}</h2>
               </div>
               <button 
                 onClick={(e) => { e.stopPropagation(); setAppState('dashboard'); }}
-                className="flex items-center gap-2 group border-2 border-slate-600 bg-slate-800 p-2 hover:bg-slate-700 transition-colors"
+                className="flex items-center gap-1 md:gap-2 group border border-slate-600 bg-slate-800 p-1.5 md:p-2 hover:bg-slate-700 transition-colors"
               >
-                <div className="w-5 h-5 rounded-full bg-red-600 border border-white flex items-center justify-center text-[10px] font-bold text-white shadow-[1px_1px_0_#000] group-hover:bg-red-500 transition-colors">B</div>
-                <span className="text-[8px] md:text-[10px] text-slate-300 group-hover:text-white tracking-widest transition-colors">RETURN</span>
+                <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-red-600 border border-white flex items-center justify-center text-[8px] md:text-[10px] font-bold text-white shadow-[1px_1px_0_#000] group-hover:bg-red-500 transition-colors">B</div>
+                <span className="text-[6px] md:text-[10px] text-slate-300 group-hover:text-white tracking-widest transition-colors hidden sm:block">RETURN</span>
               </button>
             </div>
 
-            <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-              <div className="w-full md:w-2/5 p-6 border-b-2 md:border-b-0 md:border-r-2 border-slate-700 flex flex-col gap-4 bg-slate-950 items-center justify-center shrink-0">
+            <div className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
+              <div className="w-full md:w-2/5 p-4 md:p-6 border-b border-slate-700 md:border-b-0 md:border-r-2 flex flex-col gap-4 bg-slate-950 items-center justify-center shrink-0 md:overflow-y-auto">
                 <div 
                   className={`w-full aspect-video md:aspect-square bg-slate-900 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center relative group overflow-hidden ${stages[activeStage].screenshot ? 'cursor-pointer border-solid border-cyan-500 hover:border-cyan-300' : ''}`}
                   onClick={(e) => {
@@ -571,43 +546,43 @@ export default function InteractiveLanding() {
                         className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity pixelated" 
                       />
                       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                        <div className="border-2 border-white bg-black/80 px-4 py-2 flex items-center gap-2 shadow-[2px_2px_0_#000]">
-                          <span className="text-white text-[10px] md:text-xs tracking-widest animate-pulse">[+] CLICK TO ENLARGE</span>
+                        <div className="border border-white bg-black/80 px-2 md:px-4 py-1 md:py-2 flex items-center gap-1 md:gap-2 shadow-[2px_2px_0_#000]">
+                          <span className="text-white text-[8px] md:text-xs tracking-widest animate-pulse">[+] CLICK TO ENLARGE</span>
                         </div>
                       </div>
                     </>
                   ) : (
                     <>
-                      <span className="text-slate-500 text-[10px] tracking-widest z-10">[ SCREENSHOT_SLOT ]</span>
-                      <img src={stages[activeStage].img} className="w-32 h-32 absolute opacity-30 group-hover:opacity-50 transition-opacity pixelated grayscale" />
+                      <span className="text-slate-500 text-[8px] md:text-[10px] tracking-widest z-10">[ SCREENSHOT_SLOT ]</span>
+                      <img src={stages[activeStage].img} className="w-20 h-20 md:w-32 md:h-32 absolute opacity-30 group-hover:opacity-50 transition-opacity pixelated grayscale" />
                     </>
                   )}
                 </div>
               </div>
 
-              <div className="w-full md:w-3/5 p-6 md:p-8 overflow-y-auto custom-scrollbar bg-black">
-                <div className="mb-8">
-                  <h3 className="text-yellow-400 text-[10px] md:text-xs tracking-widest mb-4 border-b border-slate-700 pb-2">/ OBJECTIVE</h3>
-                  <p className="text-slate-300 font-body text-sm md:text-base leading-relaxed normal-case">
+              <div className="w-full md:w-3/5 p-4 md:p-8 md:overflow-y-auto custom-scrollbar bg-black">
+                <div className="mb-6 md:mb-8">
+                  <h3 className="text-yellow-400 text-[8px] md:text-xs tracking-widest mb-2 md:mb-4 border-b border-slate-700 pb-1 md:pb-2">/ OBJECTIVE</h3>
+                  <p className="text-slate-300 font-body text-xs sm:text-sm md:text-base leading-relaxed normal-case">
                     {stages[activeStage].objective}
                   </p>
                 </div>
-                <div className="mb-8">
-                  <h3 className="text-yellow-400 text-[10px] md:text-xs tracking-widest mb-4 border-b border-slate-700 pb-2">/ ACHIEVEMENTS</h3>
-                  <ul className="flex flex-col gap-3">
+                <div className="mb-6 md:mb-8">
+                  <h3 className="text-yellow-400 text-[8px] md:text-xs tracking-widest mb-2 md:mb-4 border-b border-slate-700 pb-1 md:pb-2">/ ACHIEVEMENTS</h3>
+                  <ul className="flex flex-col gap-2 md:gap-3">
                     {stages[activeStage].achievements.map((achievement, i) => (
-                      <li key={i} className="flex gap-3 items-start">
-                        <span className="text-fuchsia-500 mt-1 text-[10px]">►</span>
-                        <span className="text-slate-200 font-body text-sm md:text-base normal-case">{achievement}</span>
+                      <li key={i} className="flex gap-2 items-start">
+                        <span className="text-fuchsia-500 mt-0.5 md:mt-1 text-[8px] md:text-[10px]">►</span>
+                        <span className="text-slate-200 font-body text-xs sm:text-sm md:text-base normal-case">{achievement}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-yellow-400 text-[10px] md:text-xs tracking-widest mb-4 border-b border-slate-700 pb-2">/ TECHNOLOGIES SECURED</h3>
-                  <div className="flex flex-wrap gap-2">
+                  <h3 className="text-yellow-400 text-[8px] md:text-xs tracking-widest mb-2 md:mb-4 border-b border-slate-700 pb-1 md:pb-2">/ TECHNOLOGIES SECURED</h3>
+                  <div className="flex flex-wrap gap-1.5 md:gap-2">
                     {stages[activeStage].tech.map(t => (
-                      <span key={t} className="bg-slate-800 text-white border border-slate-600 px-3 py-1.5 text-[8px] md:text-[10px] tracking-widest">
+                      <span key={t} className="bg-slate-800 text-white border border-slate-600 px-2 md:px-3 py-1 md:py-1.5 text-[6px] sm:text-[8px] md:text-[10px] tracking-widest">
                         {t}
                       </span>
                     ))}
@@ -622,25 +597,25 @@ export default function InteractiveLanding() {
 
       {enlargedImage && (
         <div 
-          className="fixed inset-0 z-[200] bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-center p-4 md:p-8 animate-fade-up pointer-events-auto"
+          className="fixed inset-0 z-[200] bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-center p-2 md:p-8 animate-fade-up pointer-events-auto"
           onClick={() => setEnlargedImage(null)} 
         >
-          <div className="w-full max-w-6xl max-h-full flex flex-col gap-4 relative">
-            <div className="w-full flex justify-between items-center bg-black border-4 border-white p-3 shrink-0 shadow-[4px_4px_0_#000]">
-              <span className="text-cyan-400 text-[10px] md:text-xs tracking-widest">IMAGE_VIEWER.EXE</span>
+          <div className="w-full max-w-6xl max-h-full flex flex-col gap-2 md:gap-4 relative">
+            <div className="w-full flex justify-between items-center bg-black border-2 md:border-4 border-white p-2 md:p-3 shrink-0 shadow-[2px_2px_0_#000] md:shadow-[4px_4px_0_#000]">
+              <span className="text-cyan-400 text-[8px] md:text-xs tracking-widest">IMAGE_VIEWER.EXE</span>
               <button 
                 onClick={(e) => { e.stopPropagation(); setEnlargedImage(null); }}
-                className="flex items-center gap-2 group hover:text-white transition-colors text-slate-400"
+                className="flex items-center gap-1 md:gap-2 group hover:text-white transition-colors text-slate-400"
               >
-                <div className="w-5 h-5 rounded-full bg-red-600 border border-white flex items-center justify-center text-[10px] font-bold text-white shadow-[1px_1px_0_#000] group-hover:bg-red-500">B</div>
-                <span className="text-[8px] md:text-[10px] tracking-widest uppercase">CLOSE</span>
+                <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-red-600 border border-white flex items-center justify-center text-[8px] md:text-[10px] font-bold text-white shadow-[1px_1px_0_#000] group-hover:bg-red-500">B</div>
+                <span className="text-[6px] md:text-[10px] tracking-widest uppercase">CLOSE</span>
               </button>
             </div>
-            <div className="w-full flex-1 border-4 border-white bg-black overflow-hidden relative shadow-[0_0_40px_rgba(6,182,212,0.2)] p-2 md:p-4 flex items-center justify-center">
+            <div className="w-full flex-1 border-2 md:border-4 border-white bg-black overflow-hidden relative shadow-[0_0_20px_rgba(6,182,212,0.2)] md:shadow-[0_0_40px_rgba(6,182,212,0.2)] p-1 md:p-4 flex items-center justify-center">
               <img 
                 src={enlargedImage} 
                 alt="Enlarged Project View" 
-                className="max-w-full max-h-[75vh] object-contain pixelated" 
+                className="max-w-full max-h-[85vh] md:max-h-[75vh] object-contain pixelated" 
                 onClick={(e) => e.stopPropagation()} 
               />
             </div>
@@ -649,73 +624,75 @@ export default function InteractiveLanding() {
       )}
 
       {appState === 'skills' && (
-        <div className="relative z-50 w-full h-full flex flex-col items-center justify-center pointer-events-auto bg-slate-950/95 backdrop-blur-md px-4 py-8 animate-fade-up select-auto">
+        <div className="relative z-50 w-full h-full flex flex-col items-center justify-center pointer-events-auto bg-slate-950/95 backdrop-blur-md px-2 md:px-4 py-4 md:py-8 animate-fade-up select-auto overflow-hidden">
           
-          <div className="w-full max-w-5xl bg-black border-4 border-slate-500 shadow-[0_0_30px_rgba(0,0,0,0.8)] flex flex-col max-h-[90vh]">
+          <div className="w-full max-w-5xl bg-black border-2 md:border-4 border-slate-500 shadow-[0_0_30px_rgba(0,0,0,0.8)] flex flex-col h-full max-h-full md:max-h-[90vh]">
             
             {/* Header */}
-            <div className="bg-slate-900 border-b-4 border-slate-500 p-4 md:p-6 flex justify-between items-center shrink-0">
+            <div className="bg-slate-900 border-b-2 md:border-b-4 border-slate-500 p-3 md:p-6 flex justify-between items-center shrink-0">
               <div>
-                <p className="text-yellow-400 text-[10px] md:text-xs tracking-widest mb-1">SYSTEM MENU</p>
-                <h2 className="text-xl md:text-3xl text-white drop-shadow-[2px_2px_0_#0f172a]">PLAYER STATUS / SKILLS</h2>
+                <p className="text-yellow-400 text-[8px] md:text-xs tracking-widest mb-1">SYSTEM MENU</p>
+                <h2 className="text-lg md:text-3xl text-white drop-shadow-[2px_2px_0_#0f172a]">PLAYER STATUS / SKILLS</h2>
               </div>
               <button 
                 onClick={(e) => { e.stopPropagation(); setAppState('dashboard'); }}
-                className="flex items-center gap-2 group border-2 border-slate-600 bg-slate-800 p-2 hover:bg-slate-700 transition-colors"
+                className="flex items-center gap-1 md:gap-2 group border border-slate-600 bg-slate-800 p-1.5 md:p-2 hover:bg-slate-700 transition-colors"
               >
-                <div className="w-5 h-5 rounded-full bg-red-600 border border-white flex items-center justify-center text-[10px] font-bold text-white shadow-[1px_1px_0_#000] group-hover:bg-red-500 transition-colors">B</div>
-                <span className="text-[8px] md:text-[10px] text-slate-300 group-hover:text-white tracking-widest transition-colors">RETURN</span>
+                <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-red-600 border border-white flex items-center justify-center text-[8px] md:text-[10px] font-bold text-white shadow-[1px_1px_0_#000] group-hover:bg-red-500 transition-colors">B</div>
+                <span className="text-[6px] md:text-[10px] text-slate-300 group-hover:text-white tracking-widest transition-colors hidden sm:block">RETURN</span>
               </button>
             </div>
 
-            {/* Content Body */}
-            <div className="flex-1 flex flex-col md:flex-row overflow-hidden bg-slate-950">
+            {/* Content Body - Allows natural scrolling on mobile */}
+            <div className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden bg-slate-950">
               
               {/* Left Column: Avatar & Vitals */}
-              <div className="w-full md:w-1/3 p-6 border-b-2 md:border-b-0 md:border-r-4 border-slate-700 flex flex-col gap-6 bg-slate-900 items-center justify-start shrink-0 overflow-y-auto custom-scrollbar">
+              <div className="w-full md:w-1/3 p-4 md:p-6 border-b border-slate-700 md:border-b-0 md:border-r-4 flex flex-col gap-4 md:gap-6 bg-slate-900 items-center justify-start shrink-0 md:overflow-y-auto custom-scrollbar">
                 
-                {/* Portrait Avatar Box */}
-                <div className="w-32 h-32 md:w-48 md:h-48 bg-black border-4 border-slate-500 flex items-center justify-center relative shadow-[4px_4px_0_#000] group overflow-hidden">
-                  <div className="absolute inset-0 crt-effect opacity-20 pointer-events-none z-10"></div>
-                  <img src="/assets/portrait.png" alt="Avatar" className="w-full h-full object-cover pixelated grayscale group-hover:grayscale-0 transition-all duration-500" />
-                  <div className="absolute bottom-0 w-full bg-black/80 text-center py-1 z-20 border-t-2 border-slate-500">
-                    <span className="text-yellow-400 text-[10px] tracking-widest">LVL 99</span>
+                <div className="flex flex-row md:flex-col items-center md:justify-start gap-4 md:gap-6 w-full">
+                  {/* Portrait Avatar Box */}
+                  <div className="w-20 h-20 md:w-48 md:h-48 bg-black border-2 md:border-4 border-slate-500 flex items-center justify-center relative shadow-[2px_2px_0_#000] md:shadow-[4px_4px_0_#000] group overflow-hidden shrink-0">
+                    <div className="absolute inset-0 crt-effect opacity-20 pointer-events-none z-10"></div>
+                    <img src="/assets/portrait.png" alt="Avatar" className="w-full h-full object-cover pixelated grayscale group-hover:grayscale-0 transition-all duration-500" />
+                    <div className="absolute bottom-0 w-full bg-black/80 text-center py-0.5 md:py-1 z-20 border-t border-slate-500">
+                      <span className="text-yellow-400 text-[6px] md:text-[10px] tracking-widest">LVL 99</span>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="w-full text-center">
-                  <h3 className="text-2xl text-cyan-400 mb-1 drop-shadow-[2px_2px_0_#000]">MANUEL</h3>
-                  <p className="text-[10px] text-slate-400 tracking-widest">CLASS: DEV_KNIGHT</p>
+                  
+                  <div className="text-left md:text-center flex-1">
+                    <h3 className="text-lg md:text-2xl text-cyan-400 mb-0.5 md:mb-1 drop-shadow-[1px_1px_0_#000] md:drop-shadow-[2px_2px_0_#000]">MANUEL</h3>
+                    <p className="text-[8px] md:text-[10px] text-slate-400 tracking-widest">CLASS: DEV_KNIGHT</p>
+                  </div>
                 </div>
 
                 {/* Vitals & Attributes */}
-                <div className="w-full bg-black border-2 border-slate-600 p-4 flex flex-col gap-4 shadow-[4px_4px_0_#000]">
+                <div className="w-full bg-black border border-slate-600 p-3 md:p-4 flex flex-col gap-3 md:gap-4 shadow-[2px_2px_0_#000] md:shadow-[4px_4px_0_#000]">
                   <div>
-                    <div className="flex justify-between text-[10px] mb-1 tracking-widest">
+                    <div className="flex justify-between text-[8px] md:text-[10px] mb-1 tracking-widest">
                       <span className="text-fuchsia-400">HP (MOTIVATION)</span>
                       <span className="text-white">999/999</span>
                     </div>
-                    <div className="w-full h-2 bg-slate-800 border border-slate-600"><div className="w-full h-full bg-fuchsia-500"></div></div>
+                    <div className="w-full h-1.5 md:h-2 bg-slate-800 border border-slate-600"><div className="w-full h-full bg-fuchsia-500"></div></div>
                   </div>
                   <div>
-                    <div className="flex justify-between text-[10px] mb-1 tracking-widest">
+                    <div className="flex justify-between text-[8px] md:text-[10px] mb-1 tracking-widest">
                       <span className="text-cyan-400">MP (CAFFEINE)</span>
                       <span className="text-white">850/999</span>
                     </div>
-                    <div className="w-full h-2 bg-slate-800 border border-slate-600"><div className="w-[85%] h-full bg-cyan-400"></div></div>
+                    <div className="w-full h-1.5 md:h-2 bg-slate-800 border border-slate-600"><div className="w-[85%] h-full bg-cyan-400"></div></div>
                   </div>
 
-                  <div className="border-t border-slate-700 my-2"></div>
+                  <div className="border-t border-slate-700 my-1 md:my-2"></div>
 
                   {/* RPG Attributes */}
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-1 md:gap-2">
                     {[
                       { label: "INT (LOGIC)", val: 95 },
                       { label: "DEX (SPEED)", val: 82 },
                       { label: "VIT (STAMINA)", val: 88 },
                       { label: "CHA (DESIGN)", val: 90 }
                     ].map(stat => (
-                      <div key={stat.label} className="flex justify-between items-center text-[10px] tracking-widest">
+                      <div key={stat.label} className="flex justify-between items-center text-[8px] md:text-[10px] tracking-widest">
                         <span className="text-slate-400">{stat.label}</span>
                         <span className="text-yellow-400">{stat.val}</span>
                       </div>
@@ -725,31 +702,31 @@ export default function InteractiveLanding() {
               </div>
 
               {/* Right Column: Skill Trees */}
-              <div className="w-full md:w-2/3 p-6 md:p-8 overflow-y-auto custom-scrollbar flex flex-col gap-8 relative">
+              <div className="w-full md:w-2/3 p-4 md:p-8 md:overflow-y-auto custom-scrollbar flex flex-col gap-6 md:gap-8 relative">
                 
                 {/* Background watermark */}
-                <div className="absolute right-0 bottom-0 opacity-5 pointer-events-none text-[150px] font-bold leading-none text-slate-500">
+                <div className="absolute right-0 bottom-0 opacity-5 pointer-events-none text-[80px] md:text-[150px] font-bold leading-none text-slate-500">
                   SKILLS
                 </div>
 
                 {skillData.map((category, index) => (
                   <div key={index} className="w-full relative z-10">
-                    <h3 className="text-cyan-400 text-sm md:text-base tracking-widest mb-4 border-b-2 border-slate-700 pb-2 flex items-center gap-2">
+                    <h3 className="text-cyan-400 text-xs md:text-sm tracking-widest mb-3 md:mb-4 border-b border-slate-700 pb-1 md:pb-2 flex items-center gap-2">
                       <span className="text-fuchsia-500">►</span> {category.category}
                     </h3>
                     
-                    <div className="flex flex-col gap-4 pl-2 md:pl-6">
+                    <div className="flex flex-col gap-3 md:gap-4 pl-1 md:pl-6">
                       {category.items.map((skill, sIndex) => (
-                        <div key={sIndex} className="flex flex-col md:flex-row md:items-center justify-between gap-2 group">
-                          <span className="text-[10px] md:text-xs text-slate-300 group-hover:text-white transition-colors tracking-widest w-40">{skill.name}</span>
+                        <div key={sIndex} className="flex flex-row items-center justify-between gap-2 group">
+                          <span className="text-[8px] sm:text-[10px] md:text-xs text-slate-300 group-hover:text-white transition-colors tracking-widest w-24 sm:w-32 md:w-40 truncate">{skill.name}</span>
                           
-                          {/* Segmented Proficiency Bar (Out of 10) */}
-                          <div className="flex gap-[2px] p-[2px] bg-black border-2 border-slate-700 w-fit group-hover:border-cyan-500 transition-colors">
+                          {/* Segmented Proficiency Bar (Out of 10) - Scaled for mobile */}
+                          <div className="flex gap-[1px] md:gap-[2px] p-[1px] md:p-[2px] bg-black border border-slate-700 w-fit group-hover:border-cyan-500 transition-colors">
                             {[...Array(10)].map((_, i) => (
                               <div 
                                 key={i} 
-                                className={`w-3 h-3 md:w-4 md:h-4 transition-all duration-300 ${i < skill.level ? 'bg-cyan-500 group-hover:bg-cyan-400 group-hover:shadow-[0_0_5px_#22d3ee]' : 'bg-slate-900'}`}
-                                style={{ transitionDelay: `${i * 50}ms` }}
+                                className={`w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 transition-all duration-300 ${i < skill.level ? 'bg-cyan-500 group-hover:bg-cyan-400 group-hover:shadow-[0_0_5px_#22d3ee]' : 'bg-slate-900'}`}
+                                style={{ transitionDelay: `${i * 30}ms` }}
                               />
                             ))}
                           </div>
@@ -760,9 +737,9 @@ export default function InteractiveLanding() {
                 ))}
                 
                 {/* Fake Save Data / Footer info */}
-                <div className="mt-auto pt-8 border-t-2 border-slate-800 flex flex-wrap gap-4 justify-between text-[8px] md:text-[10px] tracking-widest text-slate-500 relative z-10">
-                  <p>LOCATION: <span className="text-slate-300">MANILA, PH</span></p>
-                  <p>PLAYTIME: <span className="text-slate-300">999:59:59</span></p>
+                <div className="mt-auto pt-6 md:pt-8 border-t border-slate-800 flex flex-wrap gap-2 md:gap-4 justify-between text-[6px] sm:text-[8px] md:text-[10px] tracking-widest text-slate-500 relative z-10">
+                  <p>LOC: <span className="text-slate-300">MANILA, PH</span></p>
+                  <p>TIME: <span className="text-slate-300">999:59</span></p>
                   <p>CREDITS: <span className="text-yellow-400">99,999</span></p>
                 </div>
 
