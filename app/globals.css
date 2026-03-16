@@ -1,26 +1,39 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Creates the 'font-title' class */
+  --font-title: var(--font-title), monospace; 
+  /* Creates the 'font-body' class */
+  --font-body: var(--font-body), sans-serif; 
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer utilities {
+  /* Forces the browser to keep your Itch.io assets sharp and blocky */
+  .pixelated {
+    image-rendering: pixelated;
+    /* Safari fallback */
+    image-rendering: -webkit-optimize-contrast; 
   }
 }
 
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #020617; 
+  color: #a5f3fc; 
+  /* Fallback to crosshair so you instantly know if the image failed to load */
+  cursor: url('/assets/cursors/light/pointer.png'), pointer !important;
+}
+
+button, a, [role="button"] {
+  cursor: url('/assets/cursors/light/link.png'), help !important;
+}
+
+/* 3. Optional: The Arcade Shooter Crosshair */
+.cursor-precision {
+  cursor: url('/assets/cursors/light/precision.png') 16 16, crosshair !important;
+} 
+
+.cursor-pointy {
+
+  cursor: url('/assets/cursors/light/pointer.png') 0 0, cursor !important;
 }
